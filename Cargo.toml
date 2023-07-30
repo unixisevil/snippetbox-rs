@@ -1,0 +1,52 @@
+[package]
+name = "snippetbox-rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+path = "src/main.rs"
+name = "snippetbox"
+
+[dev-dependencies]
+claims = "0.7.0"
+fake = "~2.3"
+quickcheck = "0.9.2"
+quickcheck_macros = "0.9.1"
+secrecy = { version = "0.8", features = ["serde"] }
+
+
+[dependencies]
+config = { version = "0.13", default-features = false, features = ["yaml"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+actix-web = "4"
+actix-web-lab = "0.18"
+actix-session = { version = "0.7", features = ["redis-rs-tls-session"] }
+actix-web-flash-messages = { version = "0.4", features = ["cookies"] }
+actix-files="0.6.2"
+
+unicode-segmentation = "1.10.1"
+validator = "0.14"
+serde = "1.0.115"
+serde-aux = "4"
+serde_urlencoded = "0.7.1"
+secrecy = { version = "0.8", features = ["serde"] }
+chrono = { version = "0.4.22", default-features = false, features = ["clock", "serde"] }
+sqlx = { version = "0.7.1", default-features = false, features = ["runtime-tokio-rustls", "macros", "postgres", "uuid", "chrono", "migrate" ] }
+tracing = "0.1.19"
+tracing-subscriber = { version = "0.3", features = ["registry", "env-filter"] }
+tracing-actix-web = "0.7"
+tracing-bunyan-formatter = "0.3"
+tracing-log = "0.1.1"
+thiserror = "1.0.24"
+anyhow = "1.0.40"
+argon2 = { version = "0.4", features = ["std"] }
+rand = { version = "0.8", features=["std_rng"] }
+zxcvbn = "2.2.2"
+askama = "0.12.0"
+
+

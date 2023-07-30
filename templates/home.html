@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Home{%endblock%}
+{% block main %}
+    <h2>Latest Snippets</h2>
+    {% if snippets.len() != 0 %}
+     <table>
+        <tr>
+            <th>Title</th>
+            <th>Created</th>
+            <th>ID</th>
+        </tr>
+        {% for snip in snippets %}
+        <tr>
+            <!-- Use the new clean URL style-->
+            <td><a href='/snippet/view/{{snip.id}}'>{{snip.title}}</a></td>
+	    <td>{{ snip.created_at.format("%Y-%m-%d %H:%M:%S") }}</td>
+            <td>#{{snip.id}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p>There's nothing to see here... yet!</p>
+    {% endif %}
+{% endblock %}

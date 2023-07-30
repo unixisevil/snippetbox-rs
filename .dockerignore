@@ -1,0 +1,8 @@
+.env
+.dockerignore
+target/
+tests/
+Dockerfile.alpine 
+Dockerfile.distroless
+scripts/
+migrations/

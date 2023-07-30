@@ -1,0 +1,20 @@
+<nav>
+    <div>
+        <a href='/'>Home</a>
+         {% if is_authenticated %}
+            <a href='/snippet/create'>Create snippet</a>
+        {% endif %}
+    </div>
+    <div>
+        {% if is_authenticated %}
+            <form action='/user/logout' method='POST'>
+                <!-- Include the CSRF token -->
+                <input type='hidden' name='csrf_token' value='{{csrf_token}}'>
+                <button>Logout</button>
+            </form>
+        {% else %}
+            <a href='/user/signup'>Signup</a>
+            <a href='/user/login'>Login</a>
+        {% endif %}
+    </div>
+</nav>

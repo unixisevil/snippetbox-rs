@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+  db:
+    container_name: snip-postgres
+    restart: always
+    image: postgres:15.3-alpine3.18
+    environment:
+      - POSTGRES_DB=snippetbox
+      - POSTGRES_USER=boxuser
+      - POSTGRES_PASSWORD=boxuser-pass
+      - PGDATA=/data/pgdata
+    volumes:
+      - snip-data:/data/pgdata
+      - ./scripts/init-tables.sql:/docker-entrypoint-initdb.d/init-tables.sql
+    networks:
+      - snip-net
+  redis:
+    container_name: snip-redis
+    restart: always
+    image: redis:7.0.12-alpine3.18
+    networks:
+      - snip-net      
+  web:
+    restart: on-failure
+    container_name: snip-web
+    image: snippetbox:distroless
+    environment:
+      - APP_DATABASE__HOST=snip-postgres
+      - APP_DATABASE__REQUIRE_SSL=false
+      - APP_REDIS_URI=redis://snip-redis:6379
+    build:
+      context: ./
+      dockerfile: Dockerfile.distroless
+      network: host
+      args:
+        - https_proxy
+        - DOCKER_BUILDKIT=1
+    depends_on:
+      - db
+      - redis
+    ports:
+      - ":8000:8000"
+    networks:
+      - snip-net
+volumes:
+  snip-data:
+    name: snip-data
+networks:
+  snip-net:
+    name: snip-net
+

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Snippet {%if snippet.is_some() %} #{{snippet.as_ref().unwrap().id }} {% endif %}{% endblock %}
+{% block main %}
+    {% match  snippet %}
+    {% when Some with (Snippet{id, title, content, created_at, expired_at}) %}
+    <div class='snippet'>
+        <div class='metadata'>
+            <strong>{{title}}</strong>
+            <span>#{{id}}</span>
+        </div>
+        <pre><code>{{content}}</code></pre>
+        <div class='metadata'>
+            <time>Created: {{ created_at.format("%Y-%m-%d %H:%M:%S") }}</time>
+            <time>Expires: {{ expired_at.format("%Y-%m-%d %H:%M:%S") }}</time>
+        </div>
+    </div>
+    {% when None %}
+    {% endmatch %}
+{% endblock %}

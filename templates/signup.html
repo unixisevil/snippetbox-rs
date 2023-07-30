@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Signup{% endblock %}
+{% block main %}
+<form action='/user/signup' method='POST' novalidate>
+    <!-- Include the CSRF token -->
+    <input type='hidden' name='csrf_token' value='{{csrf_token}}'>
+    <div>
+        <label>Name:</label>
+        {% if  error_map.contains_key("name") %}
+		<label class='error'>{{error_map["name"]}}</label>
+        {% endif %}
+        <input type='text' name='name' value='{{form.name}}'>
+    </div>
+    <div>
+        <label>Email:</label>
+        {% if  error_map.contains_key("email") %}
+            <label class='error'>{{error_map["email"]}}</label>
+        {% endif %}
+        <input type='email' name='email' value='{{form.email}}'>
+    </div>
+    <div>
+        <label>Password:</label>
+        {%if   error_map.contains_key("password") %}
+            <label class='error'>{{error_map["password"]}}</label>
+        {% endif %}
+        <input type='password' name='password'>
+    </div>
+    <div>
+        <input type='submit' value='Signup'>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block main %}
+<form action='/user/login' method='POST' novalidate>
+    <!-- Include the CSRF token -->
+    <input type='hidden' name='csrf_token' value='{{csrf_token}}'>
+    {% if  error_map.contains_key("login_err") %}
+        <div class='error'>{{error_map["login_err"]}}</div>
+    {% endif %}
+    <div>
+        <label>Email:</label>
+        {%if  error_map.contains_key("email") %}
+	     <label class='error'>{{ error_map["email"] }}</label>
+        {% endif %}
+        <input type='email' name='email' value='{{form.email}}'>
+    </div>
+    <div>
+        <label>Password:</label>
+        {% if error_map.contains_key("password") %}
+            <label class='error'>{{ error_map["password"] }}</label>
+        {% endif %}
+        <input type='password' name='password'>
+    </div>
+    <div>
+        <input type='submit' value='Login'>
+    </div>
+</form>
+{% endblock %}
