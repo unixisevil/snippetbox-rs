@@ -7,7 +7,8 @@ use std::future::{ready, Ready};
 pub struct TypedSession(Session);
 
 impl TypedSession {
-    const USER_ID_KEY: &'static str = "user_id";
+    const USER_ID_KEY: &'static str    = "user_id";
+    const REDIRECT_KEY: &'static str   = "after_login_goto";
 
     pub fn renew(&self) {
         self.0.renew();
@@ -19,6 +20,14 @@ impl TypedSession {
 
     pub fn get_user_id(&self) -> Result<Option<i64>, SessionGetError> {
         self.0.get(Self::USER_ID_KEY)
+    }
+
+    pub fn insert_path(&self, path: &str) -> Result<(), SessionInsertError> {
+        self.0.insert(Self::REDIRECT_KEY, path)
+    }
+
+    pub fn remove_path(&self) -> Option<Result<String, String>> {
+        self.0.remove_as(Self::REDIRECT_KEY)
     }
 
     pub fn log_out(self) {

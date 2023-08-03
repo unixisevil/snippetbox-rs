@@ -62,10 +62,10 @@ pub async fn validate_credentials(
 //#[tracing::instrument(name = "Change password", skip(password, pool))]
 pub async fn change_password(
     user_id: i64,
-    password: Secret<String>,
+    new_password: Secret<String>,
     user_model: UserModel<'_>,
 ) -> Result<(), anyhow::Error> {
-    let password_hash = spawn_blocking_with_tracing(move || compute_password_hash(password))
+    let password_hash = spawn_blocking_with_tracing(move || compute_password_hash(new_password))
         .await
         .context("Failed spawn hash task")?
         .context("Failed to hash password")?;

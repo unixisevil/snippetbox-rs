@@ -1,12 +1,14 @@
 <nav>
     <div>
         <a href='/'>Home</a>
-         {% if is_authenticated %}
+	<a href='/about'>About</a>
+        {% if is_authenticated %}
             <a href='/snippet/create'>Create snippet</a>
         {% endif %}
     </div>
     <div>
         {% if is_authenticated %}
+	    <a href='/user/view'>Account</a>
             <form action='/user/logout' method='POST'>
                 <!-- Include the CSRF token -->
                 <input type='hidden' name='csrf_token' value='{{csrf_token}}'>

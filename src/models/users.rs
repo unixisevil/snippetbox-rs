@@ -2,18 +2,7 @@ use anyhow::Context;
 use secrecy::{ExposeSecret, Secret};
 use sqlx::PgPool;
 use std::fmt::Debug;
-
-/*
-use chrono::prelude::Utc;
-
-#[derive(Debug)]
-pub struct User {
-    id: i64,
-    name: String,
-    email: String,
-    created_at: chrono::DateTime<Utc>,
-}
-*/
+use crate::domain::User;
 
 #[derive(thiserror::Error, Debug)]
 pub enum RegUserError {
@@ -29,10 +18,7 @@ pub struct UserModel<'a> {
 }
 
 impl UserModel<'_> {
-    pub async fn exists(
-        &self, 
-        user_id: i64
-    ) -> Result<bool, anyhow::Error>  {
+    pub async fn exists(&self, user_id: i64) -> Result<bool, anyhow::Error> {
         let row = sqlx::query!(
             r#"
                select exists(select true from users where id = $1) as "exists!"
@@ -44,6 +30,33 @@ impl UserModel<'_> {
         .context("Failed to execute user exist query")?;
 
         Ok(row.exists)
+    }
+
+    pub async fn get(&self, user_id: i64) -> Result<Option<User>, sqlx::Error> {
+        let row = sqlx::query_as!(
+            User,
+            r#"
+               select name, email, created_at from users where id = $1
+            "#,
+            user_id,
+        )
+        .fetch_optional(self.db)
+        .await?;
+
+        Ok(row)
+    }
+    
+    pub async fn get_email(&self, user_id: i64) -> Result<String, anyhow::Error> {
+         let row = sqlx::query!(
+             r#"
+                select email from users  where id = $1
+             "#,
+             user_id,
+         )
+        .fetch_one(self.db)
+        .await
+        .context("Failed to performed a query to retrieve email.")?;
+         Ok(row.email)
     }
 
     //#[tracing::instrument(name = "Get stored credentials", skip(email))]
@@ -103,13 +116,13 @@ impl UserModel<'_> {
         .execute(self.db)
         .await
         .map_err(|e| {
-            if let Some(de) =  e.as_database_error() {
-               if de.is_unique_violation() {
+            if let Some(de) = e.as_database_error() {
+                if de.is_unique_violation() {
                     RegUserError::DuplicateEmail
-               }else {
-                  RegUserError::UnexpectedError(e)
-               }
-            }else {
+                } else {
+                    RegUserError::UnexpectedError(e)
+                }
+            } else {
                 RegUserError::UnexpectedError(e)
             }
         })?;

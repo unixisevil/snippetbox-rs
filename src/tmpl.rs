@@ -2,7 +2,7 @@ use askama::Template; // bring trait in scope
 use std::collections::HashMap;
 use std::ops::Deref;
 use chrono::prelude::*;
-use crate::domain::{Snippet, SnippetCreateForm, LoginForm, SignupForm};
+use crate::domain::{Snippet, SnippetCreateForm, LoginForm, SignupForm, User};
 
 #[derive(Template)]
 #[template(path = "base.html")]
@@ -101,4 +101,50 @@ impl<'a> Deref for HomeTemplate<'a> {
         self._parent
     }
 }
+
+
+#[derive(Template)]
+#[template(path = "about.html")]
+pub struct AboutTemplate<'a> {
+    pub _parent: &'a BaseTemplate<'a>,
+}
+
+impl<'a> Deref for AboutTemplate<'a> {
+    type Target = BaseTemplate<'a>;
+
+    fn deref(&self) -> &Self::Target {
+        self._parent
+    }
+}
+
+#[derive(Template)]
+#[template(path = "account.html")]
+pub struct AcctTemplate<'a> {
+    pub _parent: &'a BaseTemplate<'a>,
+    pub user:    Option<User>,
+}
+
+impl<'a> Deref for AcctTemplate<'a> {
+    type Target = BaseTemplate<'a>;
+
+    fn deref(&self) -> &Self::Target {
+        self._parent
+    }
+}
+
+#[derive(Template)]
+#[template(path = "password.html")]
+pub struct  PasswordUpdateTemplate<'a> {
+    pub _parent: &'a BaseTemplate<'a>,
+    pub error_map: HashMap<&'static str, &'static str>,
+}
+
+impl<'a> Deref for PasswordUpdateTemplate<'a> {
+    type Target = BaseTemplate<'a>;
+
+    fn deref(&self) -> &Self::Target {
+        self._parent
+    }
+}
+
 

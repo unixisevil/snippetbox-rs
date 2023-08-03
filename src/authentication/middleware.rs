@@ -1,7 +1,7 @@
 use actix_web::body::MessageBody;
 use actix_web::dev::{ServiceRequest, ServiceResponse};
 use actix_web::error::{InternalError, ErrorInternalServerError};
-use actix_web::{web, FromRequest, HttpMessage};
+use actix_web::{web, FromRequest, HttpMessage, HttpResponse};
 use actix_web_lab::middleware::Next;
 use sqlx::PgPool;
 use std::ops::Deref;
@@ -29,8 +29,9 @@ impl Deref for UserId {
 
 pub async fn reject_anonymous_users(
     mut req: ServiceRequest,
-    next: Next<impl MessageBody>,
-) -> Result<ServiceResponse<impl MessageBody>, actix_web::Error> {
+    next: Next<impl MessageBody + 'static>,
+) -> Result<ServiceResponse<impl MessageBody>, actix_web::Error> 
+{
     let session = {
         let (http_request, payload) = req.parts_mut();
         TypedSession::from_request(http_request, payload).await
@@ -39,12 +40,14 @@ pub async fn reject_anonymous_users(
     match session.get_user_id().map_err(e500)? {
         Some(user_id) => {
             req.extensions_mut().insert(UserId(user_id));
-            next.call(req).await
+            next.call(req).await.map(ServiceResponse::map_into_left_body)
         }
         None => {
-            let response = see_other("/user/login");
-            let e = anyhow::anyhow!("The user has not logged in");
-            Err(InternalError::from_response(e, response).into())
+            let (http_request, _) = req.parts_mut();
+            //println!("req path = {:?}", http_request.path());
+            session.insert_path(http_request.path()).map_err(e500)?;
+            let response = see_other("/user/login").map_into_right_body();
+            Ok(req.into_response(response))
         }
     }
 }
